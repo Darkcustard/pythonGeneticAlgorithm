@@ -8,30 +8,43 @@ def random_range(x1, x2) -> float:
 
 class FloatMatrix:
 
-    def __init__(self,shape : tuple[float], initial_range : tuple[float, float] = (0,0), initial_data = None):
+    def _populate_array(self, shape, initial_range, depth=0):
 
-        self.shape = shape
+        subdata = []
+        size = shape[depth]
 
-        # Recursively populate array
-        def populate_array(shape, depth=0):
+        if depth == len(shape)-1:
+            for i in range(size):
+                subdata.append(random_range(initial_range[0],initial_range[1]))
+        else:
+            for i in range(size):
+                subdata.append(self._populate_array(shape, initial_range,depth+1))
 
-            subdata = []
-            size = shape[depth]
+        return subdata
 
-            if depth == len(shape)-1:
-                for i in range(size):
-                    subdata.append(random_range(initial_range[0],initial_range[1]))
-            else:
-                for i in range(size):
-                    subdata.append(populate_array(shape, depth+1))
-
-            return subdata
+    def _get_shape(self, array) -> 'list[int]':
         
-        # Initialize values
-        self.data = populate_array(shape)
+        shape = []
 
-        if initial_data:
+        def parse_array(array):
+
+            if isinstance(array, list):
+                shape.append(len(array))
+                parse_array(array[0])
+            else:
+                return
+                
+        return shape
+
+    def __init__(self,shape : 'tuple[float]' = None, initial_range : 'tuple[float, float]' = (0,0), initial_data = None):
+        
+        if shape:
+            self.shape = shape
+            self.data = self._populate_array(shape,initial_range)
+        elif initial_data:
+            self.shape = self._get_shape(initial_data)
             self.data = initial_data
+
 
     def copy(self) -> 'FloatMatrix':
 
@@ -51,40 +64,37 @@ class FloatMatrix:
         return FloatMatrix(self.shape, initial_data=copied_data)
             
             
-        
-
     def _return_mul_scalar(self, scalar : float) -> 'FloatMatrix':
-        pass
+        
+        # Recursively iterate over matrix values and multiply by scalar
+        def pass_scalar_forward(array,scalar):
+
+            for i,element in enumerate(array):
+
+                if isinstance(element,list):
+                    pass_scalar_forward(element, scalar)
+                else:
+                    array[i] = element*scalar
+
+        copy = self.copy()
+        pass_scalar_forward(copy.data,scalar)
+        return copy
 
     def _return_mul_matrix(self, matrix : 'FloatMatrix') -> 'FloatMatrix':
         pass
 
 
-    def __mul__(self, other):
+    def __mul__(self, other) -> 'FloatMatrix':
         
         if isinstance(other,float) or isinstance(other,int):
-            pass
+            return self._return_mul_scalar(other)
         elif isinstance(other, self.__class__):
             pass
+        else:
+            print(f"TYPE ERROR : Can't multiply matrix by {other.__class__}")
 
 # Tests
 if __name__ == "__main__":
 
-    # Shape Test
-    print("Expecting 8 Values")
-    test_matrix = FloatMatrix([2,2,2], (0,10))
+    test_matrix = FloatMatrix((2,2))
     print(test_matrix.data)
-    
-    print("Linear : ")
-    for z in test_matrix.data:
-        for y in z:
-            for x in y:
-                print(x)
-
-    test_matrix*1
-    test_matrix*FloatMatrix((2,),(0,1))
-
-
-    print("COPYING TRUE IF CORRECT")
-    copied_matrix = test_matrix.copy()
-    print(copied_matrix.data==test_matrix.data)
