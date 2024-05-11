@@ -1,0 +1,14 @@
+
+[Population]
+population_size 250
+survival_rate 0.5
+
+[Parameters]
+weight_min -10
+weight_max 10
+bias_min -30
+bias_max 30
+
+[Activations]
+[ReLU, LeakyReLU, sigmoid, tanh]
+activation ReLU
