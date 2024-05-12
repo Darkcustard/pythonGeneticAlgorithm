@@ -5,11 +5,19 @@ def randrange(x1,x2) -> float:
 
 def is_number(x : str) -> bool:
     if len(x) == 0: return False
-    digits = list("0123456789.")
+    digits = list("0123456789.-+")
     return sum([1 if char in digits else 0 for char in x]) == len(x)
 
 def is_int(x : float) -> bool:
     return round(x)==x
+
+def odds(p : float) -> bool:
+    return random() <= p
+
+def clamp(x:float,x1:float,x2:float) -> float:
+    if x < x1: return x1
+    elif x > x2: return x2
+    return x
 
 class FloatMatrix:
 
@@ -60,6 +68,30 @@ class FloatMatrix:
             print(f"TYPE ERROR: undefined behaviour : Matrix * {other.__class__}")
             exit()
 
+    def __add__(self, other) -> 'FloatMatrix':
+        copy = self.copy()
+        
+        # Adding another matrix
+        if isinstance(other, self.__class__):
+            
+            # Shape check
+            if not other.shape == self.shape:
+                print("SHAPE ERROR: Summed matrices must have the same shape.")
+                exit()
+
+            for row in range(len(copy.data)):
+                for col in range(len(copy.data[0])):
+                    copy.data[row][col] = self.data[row][col] + other.data[row][col]
+
+            return copy
+
+        
+        # Undefined
+        else:
+            print(f"TYPE ERROR: undefined behaviour : Matrix + {other.__class__}")
+            exit()
+
+
 # Testing
 if __name__ == "__main__":
 
@@ -76,6 +108,11 @@ if __name__ == "__main__":
     print("'.9999'", is_number('.9999'))
     print("'0.500abcd'", is_number('0.555abcd'))
     print("'3.1415'", is_number('3.1415'))
+    print("'-1'", is_number('-1'))
+
+    print("\nIs Int")
+    print("-1", is_int(-1))
+    print("-1.5", is_int(-1.5))
 
 
     print("-------------------------------------\nENTERING FLOATMATRIX TESTING MODE...\n-------------------------------------")
@@ -93,7 +130,7 @@ if __name__ == "__main__":
     product = test*scalar
     print(product)
 
-    print("Matrix Multiplication :\n")
+    print("\nMatrix Multiplication :")
 
     print("Matrix 1: ")
     test1 = FloatMatrix(initial_data=[[1,2,3]])
@@ -106,6 +143,15 @@ if __name__ == "__main__":
     product = test1*test2
     print("\nProduct :")
     print(product)
+
+    print("\nMatrix Addition")
+    test1 = FloatMatrix(initial_data=[[1,2,3],[4,5,6],[7,8,9]])
+    test2 = FloatMatrix(initial_data=[[1,2,3],[4,5,6],[7,8,9]])
+    print(test1)
+    print("+")
+    print(test2)
+    print("=")
+    print(test1+test2)
     
 
 
