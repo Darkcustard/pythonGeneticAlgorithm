@@ -90,8 +90,6 @@ class Genome:
             
 
 
-
-
 class FeedForwardNetwork:
 
     def init_weights(self) -> 'list[FloatMatrix]':
@@ -134,6 +132,22 @@ class FeedForwardNetwork:
         self.weights = self.init_weights()
         self.biases = self.init_biases()
 
+    def activate(self, inputs : 'list[float]') -> 'list[float]':
+
+        layer_output = FloatMatrix(initial_data=[inputs])
+
+        for i in range(len(self.layer_sizes)-1):
+
+            weights = self.weights[i]
+            biases = self.biases[i]
+
+            layer_output *= weights
+            layer_output += biases
+            layer_output.map_func(self.activation)
+
+        return layer_output.data[0]
+
+
 # Testing
 if __name__ == "__main__":
 
@@ -172,3 +186,12 @@ if __name__ == "__main__":
 
     print("Biases: ")
     [print(matrix,"\n") for matrix in test_network.biases]
+
+
+    print("\nNetwork data parsing test")
+    test_genome = Genome(default_config, [2,3,1])
+    test_network = FeedForwardNetwork(test_genome)
+    inputs = [-0.5,1]
+    print("Structure : [2,3,1]")
+    print(f"Inputs : {inputs}")
+    print(f"Result : {test_network.activate(inputs)}")

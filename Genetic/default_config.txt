@@ -5,7 +5,7 @@ survival_rate 0.5
 
 [Parameters]
 weight_min -10
-weight_max 1
+weight_max 10
 
 bias_min -30
 bias_max 30
@@ -24,4 +24,4 @@ cross_over_coefficient 0.3
 
 [Activations]
 [ReLU, LeakyReLU, sigmoid, tanh]
-activation ReLU
+activation tanh
