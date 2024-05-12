@@ -44,6 +44,9 @@ class Genome:
         self.bias_count = sum(layer_sizes[1::])
         self.weight_count = len(self.genes)-self.bias_count
 
+    def reset_fitness(self):
+        self.fitness = 0
+
     def get_mutated(self) -> 'Genome':
         
         new_genes = self.genes.copy()

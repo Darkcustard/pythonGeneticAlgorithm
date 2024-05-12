@@ -32,6 +32,11 @@ def read_config(path, destination_config = None) -> dict:
 
 default_config = read_config("default_config.txt")
 
+def load_config(path : str) -> dict:
+    new_config = default_config.copy()
+    read_config(path,new_config)
+    return new_config
+
 # Testing
 if __name__ == "__main__":
     print("\nGENERATE CONFIG FROM default_config.txt")
