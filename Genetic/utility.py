@@ -36,6 +36,23 @@ class FloatMatrix:
             data.append(row.copy())
         return FloatMatrix(initial_data = data)
 
+    def mapped_func(self,func) -> 'FloatMatrix':
+        
+        copy = self.copy()
+        for row in copy.data:
+            for i in range(len(row)):
+                row[i] = func(row[i])
+
+        return copy
+
+    def fill_from_linear_source(self,source : 'list[float]', start_index=0):
+        
+        # Column by column
+        total_index = 0
+        for col in range(len(self.data[0])):
+            for i in range(len(self.data)):
+                self.data[i][col] = source[total_index+start_index]
+                total_index += 1
 
     # Method overloading
     def __str__(self):
@@ -152,6 +169,19 @@ if __name__ == "__main__":
     print(test2)
     print("=")
     print(test1+test2)
+
+
+    print("\nLinear Source fill")
+    test1 = FloatMatrix(initial_data=[[1,2,3],[4,5,6],[7,8,9]])
+    source = [9,8,7,6,5,4,3,2,1]
+    print("original")
+    print(test1)
+    print("Source")
+    print(source)
+    test1.fill_from_linear_source(source)
+    print("Result")
+    print(test1)
+    
     
 
 

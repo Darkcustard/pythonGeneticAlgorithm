@@ -1,4 +1,4 @@
-from utility import randrange, odds, clamp
+from utility import randrange, odds, clamp, FloatMatrix
 from config import default_config
 from activation import Activations
 
@@ -32,6 +32,7 @@ class Genome:
         self.config = config
         self.layer_sizes = layer_sizes
         self.activation = Activations[config['activation']]
+        self.fitness = 0
 
         # Assign genes
         if genes:
@@ -93,9 +94,45 @@ class Genome:
 
 class FeedForwardNetwork:
 
-    def __init__():
-        pass
+    def init_weights(self) -> 'list[FloatMatrix]':
+        
+        start_index = 0
+        weight_tensor = []
 
+        for i in range(len(self.layer_sizes)-1):
+            from_size, to_size = (self.layer_sizes[i], self.layer_sizes[i+1])
+            matrix_size = from_size*to_size
+            weight_matrix = FloatMatrix([from_size, to_size])
+            weight_matrix.fill_from_linear_source(self.genome.genes,start_index)
+            start_index += matrix_size
+            weight_tensor.append(weight_matrix)
+        
+        return weight_tensor
+
+    def init_biases(self) -> 'list[FloatMatrix]':
+        
+        start_index = self.genome.weight_count
+        bias_tensor = []
+
+        for i in range(len(self.layer_sizes)-1):
+            layer_size = self.layer_sizes[i+1]
+            bias_matrix = FloatMatrix([1,layer_size])
+            bias_matrix.fill_from_linear_source(self.genome.genes,start_index)
+            start_index += layer_size
+            bias_tensor.append(bias_matrix)
+
+        return bias_tensor
+
+    def __init__(self,genome : Genome):
+        
+        # Grab useful references from genome
+        self.genome = genome
+        self.layer_sizes = genome.layer_sizes 
+        self.activation = genome.activation
+
+        # Initialize parameters from genome
+        self.weights = self.init_weights()
+        self.biases = self.init_biases()
 
 # Testing
 if __name__ == "__main__":
@@ -124,3 +161,14 @@ if __name__ == "__main__":
     print("Original",test_genome)
     print("Gene-Donator",gene_donator_genome)
     print("Result",test_genome.get_cross_over(gene_donator_genome))
+
+
+    print("\nNetwork Parameter init test")
+    test_genome = Genome(default_config, [2,3,2])
+    print("Genome: ",test_genome)
+    test_network = FeedForwardNetwork(test_genome)
+    print("Weights: ")
+    [print(matrix,"\n") for matrix in test_network.weights]
+
+    print("Biases: ")
+    [print(matrix,"\n") for matrix in test_network.biases]
