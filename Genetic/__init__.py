@@ -1,6 +1,6 @@
-from population import Population
-from network import FeedForwardNetwork, Genome
-from config import load_config
+from genetic.population import Population
+from genetic.network import FeedForwardNetwork, Genome
+from genetic.config import load_config
 from pickle import dump, load
 
 

@@ -1,6 +1,6 @@
-from utility import randrange, odds, clamp, FloatMatrix
-from config import default_config
-from activation import Activations
+from genetic.utility import randrange, odds, clamp, FloatMatrix
+from genetic.config import default_config
+from genetic.activation import Activations
 
 
 

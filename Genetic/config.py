@@ -1,4 +1,4 @@
-from utility import is_number, is_int
+from genetic.utility import is_number, is_int
 
 def read_config(path, destination_config = None) -> dict:
     config = {}
@@ -30,7 +30,7 @@ def read_config(path, destination_config = None) -> dict:
     if destination_config: return
     return config
 
-default_config = read_config("default_config.txt")
+default_config = read_config("genetic/default_config.txt")
 
 def load_config(path : str) -> dict:
     new_config = default_config.copy()

@@ -1,5 +1,5 @@
-from network import Genome, FeedForwardNetwork, default_config
-from utility import odds
+from genetic.network import Genome, FeedForwardNetwork, default_config
+from genetic.utility import odds
 from random import choice
 
 class Population:
@@ -69,7 +69,7 @@ class Population:
         for generation in range(generations):
             
             # Reporting
-            print(f"\nRunning generation: {generation}\n------------------------------------------")
+            print(f"\nRunning generation: {generation+1}\n------------------------------------------")
 
             # Reset fitness and create networks
             [genome.reset_fitness() for genome in self.genomes]
