@@ -3,7 +3,7 @@ import genetic
 from math import atan2
 from random import random
 
-genome = genetic.load_genome("40_best.ai")
+genome = genetic.load_genome("pendulum.ai")
 network = genetic.FeedForwardNetwork(genome)
 
 resolution = pygame.Vector2(1000,300)
@@ -23,7 +23,7 @@ half_resolution = resolution.x/2
 half_track = track_size / 2.0
 half_height = resolution.y / 2.0
 pole_length = 100
-trolley_speed = 20
+trolley_speed = 30
 
 
 trolley_position = pygame.Vector2(half_resolution, half_height)
@@ -43,11 +43,12 @@ while running:
     mouse_pos = pygame.Vector2(pygame.mouse.get_pos())
     mouse_clicked = pygame.mouse.get_pressed()[0]
 
+    # Wind
     if mouse_clicked:
         distance = mouse_pos.distance_to(pole_position)
         if distance > 0:
-            to_mouse = (mouse_pos-pole_position).normalize()
-            pole_position += to_mouse*10*dt
+            to_mouse = (pole_position-mouse_pos).normalize()
+            pole_position += to_mouse*5*dt
 
     # check for exits
     for event in pygame.event.get():

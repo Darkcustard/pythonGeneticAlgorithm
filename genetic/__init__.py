@@ -5,6 +5,7 @@ from pickle import dump, load
 
 
 def save_genome(genome : Genome, path : str):
+    print(f"Saving best Genome to: {path}")
     with open(path,"wb") as f:
         dump(genome, f)
 

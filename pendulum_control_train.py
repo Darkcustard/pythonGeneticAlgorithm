@@ -2,6 +2,7 @@ import genetic
 import pygame
 from math import atan2, sin
 from random import random
+from random import choice
 
 import genetic.utility
 
@@ -19,7 +20,6 @@ def get_ang(vec : pygame.Vector2) -> float:
     return atan2(vec.y, vec.x) + 1.5707963267948966
 
 # Define evaluator
-
 def eval_genomes(genomes, networks):
 
     # Init gamevar
@@ -33,7 +33,7 @@ def eval_genomes(genomes, networks):
     half_height = resolution.y / 2.0
     population_size = len(networks)
     pole_length = 100
-    trolley_speed = 20
+    trolley_speed = 30
 
 
 
@@ -46,16 +46,47 @@ def eval_genomes(genomes, networks):
     pole_positions = [pygame.Vector2(half_resolution,half_height-100) for i in range(population_size)]
     pole_positions_last = [pygame.Vector2(half_resolution,half_height-100) for i in range(population_size)]
 
+    # Wind
+    force_period = 0
+    force_time = 0
+    force_origin = None
+    force_strength = 5
 
-    while time < 20:
+
+
+    while time < 30:
 
         # Per game-loop basis
-        dt = clock.tick(60)/500
+        dt = clock.tick(60)/1000
         window.fill((0,0,0))
         time += dt
         pygame.draw.line(window, (255,255,255), pygame.Vector2(half_pit,half_height), pygame.Vector2(resolution.x-half_pit, half_height),2)
         fitnesses = [genome.fitness for genome in genomes]
         best_genome_index = fitnesses.index(max(fitnesses))
+
+        # Wind
+
+        # While wind acting
+        if force_period > 0:
+            force_time += dt
+
+        # Chance of wind
+        if genetic.utility.odds(0.05) and force_period == 0:
+            force_period = random()*3
+            force_origin = pygame.Vector2(random()*resolution.x, random()*resolution.y)
+
+        # Wind over
+        if force_time > force_period:
+            force_period = 0
+            force_time = 0
+
+        # If all genomes failed, fast forward
+        all_dead = True
+        for status in trolley_collided:
+            if not status:
+                all_dead = False
+        if all_dead:
+            time = 9999        
 
 
         # Per genome basis
@@ -83,8 +114,8 @@ def eval_genomes(genomes, networks):
             pole_positions[i] += pole_vel
             pole_position.y += 10*dt
 
-            if genetic.utility.odds(0.01):
-                pole_position.x += (random()*10-5)
+            # if genetic.utility.odds(0.01):
+            #     pole_position.x += (random()*10-5)
 
             # Enforce verlet trolley
             trolley_vel = trolley_position-trolley_position_last
@@ -99,12 +130,11 @@ def eval_genomes(genomes, networks):
                 delta = pole_length-distance
                 pole_position+=delta*to_pole
 
-            all_dead = True
-            for status in trolley_collided:
-                if not status:
-                    all_dead = False
-            if all_dead:
-                time = 9999
+            # Wind
+            if force_period > 0:
+                distance = pole_position.distance_to(force_origin)
+                if distance > 0:
+                    pole_positions[i] += (pole_position-force_origin).normalize()*force_strength*dt
 
             # Query network and fitness
             if not trolley_collided[i]:
@@ -126,9 +156,6 @@ def eval_genomes(genomes, networks):
                 # Fitness
                 height = (trolley_position.y+pole_length)-pole_position.y
                 distance = max(1,abs(trolley_position.x-half_resolution))
-                trolley_velocity_magnitude = max(1,abs(trolley_vel.x))
-                pole_velocity_magnitude = max(1,abs(angvel))
-                
                 genome.fitness += (height/(distance**0.5))*dt
             else:
                 trolley_positions[i].y += 10*dt
@@ -157,12 +184,15 @@ def eval_genomes(genomes, networks):
         # Check quit
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                path = input("Input a filename to save current best genome or leave blank to discard: ")
+                if path:
+                    genetic.save_genome(genomes[best_genome_index], path)
                 exit()
 
         pygame.display.update()
 
 
 
-
-best_genome = population.evolve(eval_genomes, 100)
-genetic.save_genome(best_genome,"40_best.ai")
+# Run population and save best genome
+best_genome = population.evolve(eval_genomes, 30)
+genetic.save_genome(best_genome,"pendulum.ai")
