@@ -1,0 +1,26 @@
+
+[Population]
+population_size 400
+survival_rate 0.3
+
+[Parameters]
+weight_min -60
+weight_max 60
+bias_min -120
+bias_max 120
+
+[Mutations and cross-over]
+weight_mutate_rate 0.3
+weight_mutate_power 6
+weight_replace_rate 0.05
+
+bias_mutate_rate 0.3
+bias_mutate_power 12
+bias_replace_rate 0.05
+
+cross_over_chance 0.05
+cross_over_coefficient 0.5
+
+[Activations]
+[ReLU, LeakyReLU, sigmoid, tanh]
+activation ReLU

@@ -49,6 +49,7 @@ while running:
         if distance > 0:
             to_mouse = (pole_position-mouse_pos).normalize()
             pole_position += to_mouse*5*dt
+        pygame.draw.line(window, (255,255,255), mouse_pos, pole_position)
 
     # check for exits
     for event in pygame.event.get():

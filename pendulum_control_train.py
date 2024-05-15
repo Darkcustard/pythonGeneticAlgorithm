@@ -71,8 +71,8 @@ def eval_genomes(genomes, networks):
             force_time += dt
 
         # Chance of wind
-        if genetic.utility.odds(0.05) and force_period == 0:
-            force_period = random()*3
+        if genetic.utility.odds(0.1) and force_period == 0 and time > 5:
+            force_period = random()*2
             force_origin = pygame.Vector2(random()*resolution.x, random()*resolution.y)
 
         # Wind over
@@ -156,7 +156,7 @@ def eval_genomes(genomes, networks):
                 # Fitness
                 height = (trolley_position.y+pole_length)-pole_position.y
                 distance = max(1,abs(trolley_position.x-half_resolution))
-                genome.fitness += (height/(distance**0.5))*dt
+                genome.fitness += ((height*time)/(distance**0.5))*dt
             else:
                 trolley_positions[i].y += 10*dt
 
@@ -167,10 +167,10 @@ def eval_genomes(genomes, networks):
                 pygame.draw.circle(window, (255,255,0), pole_position, 10)
                 pygame.draw.circle(window, (255,255,0), trolley_position, 10)
 
-            else:
-                pygame.draw.line(window, (255,255,255), pole_position, trolley_position, 1)
-                pygame.draw.circle(window, (0,255,255), pole_position, 10)
-                pygame.draw.circle(window, (100,100,100), trolley_position, 10)
+            # else:
+            #     pygame.draw.line(window, (255,255,255), pole_position, trolley_position, 1)
+            #     pygame.draw.circle(window, (0,255,255), pole_position, 10)
+            #     pygame.draw.circle(window, (100,100,100), trolley_position, 10)
 
 
             
@@ -194,5 +194,5 @@ def eval_genomes(genomes, networks):
 
 
 # Run population and save best genome
-best_genome = population.evolve(eval_genomes, 30)
+best_genome = population.evolve(eval_genomes, 60)
 genetic.save_genome(best_genome,"pendulum.ai")
