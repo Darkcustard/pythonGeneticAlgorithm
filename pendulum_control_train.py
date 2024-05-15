@@ -83,7 +83,7 @@ def eval_genomes(genomes, networks):
             pole_positions[i] += pole_vel
             pole_position.y += 10*dt
 
-            if genetic.utility.odds(0.001):
+            if genetic.utility.odds(0.01):
                 pole_position.x += (random()*10-5)
 
             # Enforce verlet trolley
@@ -164,5 +164,5 @@ def eval_genomes(genomes, networks):
 
 
 
-best_genome = population.evolve(eval_genomes, 1000)
-genetic.save_genome(best_genome,"1000_best.ai")
+best_genome = population.evolve(eval_genomes, 100)
+genetic.save_genome(best_genome,"40_best.ai")
