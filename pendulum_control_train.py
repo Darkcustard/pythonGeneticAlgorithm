@@ -167,10 +167,10 @@ def eval_genomes(genomes, networks):
                 pygame.draw.circle(window, (255,255,0), pole_position, 10)
                 pygame.draw.circle(window, (255,255,0), trolley_position, 10)
 
-            # else:
-            #     pygame.draw.line(window, (255,255,255), pole_position, trolley_position, 1)
-            #     pygame.draw.circle(window, (0,255,255), pole_position, 10)
-            #     pygame.draw.circle(window, (100,100,100), trolley_position, 10)
+            else:
+                pygame.draw.line(window, (255,255,255), pole_position, trolley_position, 1)
+                pygame.draw.circle(window, (0,255,255), pole_position, 10)
+                pygame.draw.circle(window, (100,100,100), trolley_position, 10)
 
 
             
