@@ -1,6 +1,7 @@
 from genetic.utility import randrange, odds, clamp, FloatMatrix
 from genetic.config import default_config
 from genetic.activation import Activations
+from random import choice
 
 
 
@@ -24,6 +25,12 @@ class Genome:
             for b in range(layer_bias_count):
                 genes.append(randrange(bias_range[0], bias_range[1]))
 
+        # Create Activations
+        for i in range(len(self.layer_sizes)-1):
+            layer_neuron_count = self.layer_sizes[i+1]
+            for a in range(layer_neuron_count):
+                genes.append(choice(self.activation_options))
+
         return genes
 
     def __init__(self, config : dict, layer_sizes : 'list[int]', genes : 'list[float]' = None) -> 'Genome':
@@ -31,7 +38,7 @@ class Genome:
         # Init
         self.config = config
         self.layer_sizes = layer_sizes
-        self.activation = Activations[config['activation']]
+        self.activation_options = config['activation']
         self.fitness = 0
 
         # Assign genes
@@ -42,7 +49,7 @@ class Genome:
 
         # Count weights and biases for indexing
         self.bias_count = sum(layer_sizes[1::])
-        self.weight_count = len(self.genes)-self.bias_count
+        self.weight_count = len(self.genes)-self.bias_count*2
 
     def reset_fitness(self):
         self.fitness = 0
@@ -66,7 +73,7 @@ class Genome:
                     new_genes[i] = randrange(self.config['weight_min'], self.config['weight_max'])
 
             # Bias
-            else:
+            elif not isinstance(gene, str):
                 # Mutation
                 if odds(self.config["bias_mutate_rate"]):
                     new_genes[i] = clamp(gene+self.config['bias_mutate_power']*randrange(-1,1),self.config['bias_min'], self.config['bias_max'])
@@ -74,6 +81,12 @@ class Genome:
                 # Replacement
                 if odds(self.config["bias_replace_rate"]):
                     new_genes[i] = randrange(self.config['bias_min'], self.config['bias_max'])
+
+            # Activation
+            else:
+                if odds(self.config['activation_mutate_rate']):
+                    new_genes[i] = choice(self.activation_options)
+
 
         return Genome(self.config, self.layer_sizes, new_genes)
 
@@ -123,17 +136,29 @@ class FeedForwardNetwork:
             bias_tensor.append(bias_matrix)
 
         return bias_tensor
+    
+
+    def init_activations(self) -> 'list[str]':
+
+        activation_count = len(self.genome.genes) - self.genome.weight_count - self.genome.bias_count
+        activations = []
+
+        for activation in self.genome.genes[len(self.genome.genes)-activation_count:]:
+            activations.append(Activations[activation])
+
+        return activations
 
     def __init__(self,genome : Genome):
         
         # Grab useful references from genome
         self.genome = genome
         self.layer_sizes = genome.layer_sizes 
-        self.activation = genome.activation
+        
 
         # Initialize parameters from genome
         self.weights = self.init_weights()
         self.biases = self.init_biases()
+        self.activations = self.init_activations()
 
     def activate(self, inputs : 'list[float]') -> 'list[float]':
 
@@ -143,10 +168,9 @@ class FeedForwardNetwork:
 
             weights = self.weights[i]
             biases = self.biases[i]
-
             layer_output *= weights
             layer_output += biases
-            layer_output.map_func(self.activation)
+            layer_output.map_func_per_col(self.activations)
 
         return layer_output.data[0]
 

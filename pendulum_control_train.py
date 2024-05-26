@@ -35,8 +35,6 @@ def eval_genomes(genomes, networks):
     pole_length = 100
     trolley_speed = 30
 
-
-
     # Define positions (Verlet)
     trolley_positions = [pygame.Vector2(half_resolution, half_height) for i in range(population_size)]
     trolley_collided = [False for i in range(population_size)]
@@ -51,8 +49,6 @@ def eval_genomes(genomes, networks):
     force_time = 0
     force_origin = None
     force_strength = 5
-
-
 
     while time < 30:
 
@@ -105,8 +101,6 @@ def eval_genomes(genomes, networks):
             current_ang = get_ang(pole_position-trolley_position)
             last_ang = get_ang(pole_position_last-trolley_position)
             angvel = (current_ang-last_ang)/dt
-
-
 
             # Enforce verlet pole
             pole_vel = pole_position-pole_position_last

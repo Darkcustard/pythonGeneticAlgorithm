@@ -36,11 +36,17 @@ class FloatMatrix:
             data.append(row.copy())
         return FloatMatrix(initial_data = data)
 
-    def map_func(self,func) -> 'FloatMatrix':
+    def map_func(self,func):
         
         for row in self.data:
             for i in range(len(row)):
                 row[i] = func(row[i])
+
+    def map_func_per_col(self, funcs : 'list'):
+        
+        for row in self.data:
+            for i in range(len(row)):
+                row[i] = funcs[i](row[i])
 
     def fill_from_linear_source(self,source : 'list[float]', start_index=0):
         

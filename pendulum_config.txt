@@ -23,4 +23,5 @@ cross_over_coefficient 0.5
 
 [Activations]
 [ReLU, LeakyReLU, sigmoid, tanh]
-activation ReLU
+activation ReLU sigmoid tanh
+activation_mutate_rate 0.1

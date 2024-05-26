@@ -12,7 +12,18 @@ def read_config(path, destination_config = None) -> dict:
             elif line == "\n": continue
 
             # Unpack key, value pairs
-            key, value = line.split(" ")
+            arguments = line.split(" ")
+
+            # Reading multiple activations
+            if arguments[0] == 'activation':
+                value = [ x.replace('\n','') for x in arguments[1:]]
+                if destination_config: destination_config['activation'] = value
+                else: config['activation'] = value
+                continue
+
+            # Reading default values
+            else:
+                key, value = line.split(" ")
 
             # Strip newline characters
             value = value.replace("\n",'')
@@ -22,10 +33,9 @@ def read_config(path, destination_config = None) -> dict:
                 if is_int(float(value)) : value = int(value)
                 else: value = float(value)
 
-            if destination_config:
-                destination_config[key] = value
-            else:
-                config[key] = value
+            # Send to config
+            if destination_config: destination_config[key] = value
+            else: config[key] = value
 
     if destination_config: return
     return config
