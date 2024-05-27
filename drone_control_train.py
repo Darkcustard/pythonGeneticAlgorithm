@@ -32,10 +32,6 @@ class Drone:
     color_normal = (0,255,0)
 
 
-
-
-
-
     def __init__(self, pos : 'tuple[float,float]'):
 
         # Positions for verlet
@@ -99,9 +95,7 @@ class Drone:
             self.left_thruster_pos += left_to_right * quota
             self.right_thruster_pos -= left_to_right * quota
 
-        # Bounds
-        if self.midpoint.x < 0 or self.midpoint.x > resolution.x or self.midpoint.y < 0 or self.midpoint.y > resolution.y:
-            self.alive = False
+
 
         
 
@@ -152,6 +146,7 @@ def evaluate_genomes(genomes, networks):
     clock = pygame.time.Clock()
     time = 0
     max_time = 30
+    seed(7945)
     target = pygame.Vector2(randint(30,round(resolution.x)-30), randint(30,round(resolution.y)-30))
     target_speed = 200
     waypoint_cooldown = 5
@@ -162,6 +157,7 @@ def evaluate_genomes(genomes, networks):
     start = (randint(100,round(resolution.x)-100), randint(100,round(resolution.y)-100))
     for i in range(len(genomes)):
         drones.append(Drone(start))
+    target = pygame.Vector2(target)
 
 
 
@@ -201,6 +197,12 @@ def evaluate_genomes(genomes, networks):
             drone = drones[i]
 
             if drone.alive:
+
+                # Bounds
+                if drone.midpoint.x < 0 or drone.midpoint.x > resolution.x or drone.midpoint.y < 0 or drone.midpoint.y > resolution.y:
+                    drone.alive = False
+                    genomes[i].fitness -= max_time - time
+                    continue
                 
                 # Activate
                 inputs = [
@@ -233,7 +235,17 @@ def evaluate_genomes(genomes, networks):
 
                 # Fitness
                 distance_to_target = drone.midpoint.distance_to(target)
-                genomes[i].fitness += time**2/max(1,distance_to_target)
+                
+                if distance_to_target < 30:
+                    genomes[i].fitness += dt*10
+
+                elif distance_to_target != 0:
+                    if drone.vel.magnitude() != 0:
+                        to_target = (target-drone.midpoint).normalize()
+                        vel = drone.vel.normalize()
+                        genomes[i].fitness += dt*vel.dot(to_target)
+
+
 
                 # Incentive
                 """

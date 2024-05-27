@@ -1,17 +1,17 @@
 import genetic
 import pygame
+import genetic.utility
+
 from math import atan2, sin
 from random import random
 from random import choice
-
-import genetic.utility
 
 # Window
 resolution = pygame.Vector2(1000,300)
 window = pygame.display.set_mode(resolution)
 pygame.display.set_caption("Cart-Pendulum Test")
 
-# Genetic algo ini
+# Genetic algo init
 config = genetic.load_config('./pendulum_config.txt')
 population = genetic.Population(config, [4,10,10,10,2])
 
@@ -54,6 +54,7 @@ def eval_genomes(genomes, networks):
 
         # Per game-loop basis
         dt = clock.tick(60)/1000
+        dt = dt if dt < 0.5 else 1/60
         window.fill((0,0,0))
         time += dt
         pygame.draw.line(window, (255,255,255), pygame.Vector2(half_pit,half_height), pygame.Vector2(resolution.x-half_pit, half_height),2)
@@ -150,7 +151,7 @@ def eval_genomes(genomes, networks):
                 # Fitness
                 height = (trolley_position.y+pole_length)-pole_position.y
                 distance = max(1,abs(trolley_position.x-half_resolution))
-                genome.fitness += ((height*time)/(distance**0.5))*dt
+                genome.fitness += (height*time**2/distance)*dt
             else:
                 trolley_positions[i].y += 10*dt
 
@@ -168,13 +169,6 @@ def eval_genomes(genomes, networks):
 
 
             
-
-            
-
-
-
-
-
         # Check quit
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -185,8 +179,6 @@ def eval_genomes(genomes, networks):
 
         pygame.display.update()
 
-
-
 # Run population and save best genome
-best_genome = population.evolve(eval_genomes, 60)
+best_genome = population.evolve(eval_genomes, 35)
 genetic.save_genome(best_genome,"pendulum.ai")

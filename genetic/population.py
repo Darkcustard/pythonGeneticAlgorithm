@@ -1,6 +1,6 @@
 from genetic.network import Genome, FeedForwardNetwork, default_config
 from genetic.utility import odds
-from random import choice
+from random import choice, seed
 
 class Population:
 
@@ -8,6 +8,7 @@ class Population:
         self.config = config
         self.structure = structure
         self.genomes = [Genome(config, structure) for i in range(self.config['population_size'])]
+        self.stagnation = 0
 
     def kill_genomes(self):
 
@@ -53,20 +54,26 @@ class Population:
         self.genomes.extend(new_genomes)
         self.genomes = self.genomes[0:self.config["population_size"]]
 
-    def report(self):
+    def calculate_metrics(self, report : bool ):
 
-        fitnesses = [genome.fitness for genome in self.genomes]
-        avg = sum(fitnesses)/len(fitnesses)
-        stddev = sum([abs(fitness-avg) for fitness in fitnesses])/len(fitnesses)
+        self.fitnesses = [genome.fitness for genome in self.genomes]
+        self.avg = sum(self.fitnesses)/len(self.fitnesses)
+        self.stddev = sum([abs(fitness-self.avg) for fitness in self.fitnesses])/len(self.fitnesses)
 
-        #print(f"Population size : {len(fitnesses)}")
-        print(f"Best fitness: {max(fitnesses)}")
-        print(f"Average fitness: {avg}")
-        print(f"Standard deviation: {stddev}")
+        if report:
+            print(f"Best fitness: {max(self.fitnesses)}")
+            print(f"Average fitness: {self.avg}")
+            print(f"Standard deviation: {self.stddev}")
+            print(f"Stagnation : {self.stagnation}/{self.config['max_stagnation']} | Target : {self.best_average}")
+
 
     def evolve(self, evaluator_function, generations : int, report_interval = 1) -> Genome:
 
-        for generation in range(generations):
+        self.best_average = None
+        self.stagnation = 0
+        generation = 0
+
+        while generation < generations:
             
             # Reporting
             print(f"\nRunning generation: {generation+1}\n------------------------------------------")
@@ -77,14 +84,32 @@ class Population:
 
             # Evaluate networks
             evaluator_function(self.genomes,networks)
+            
+            # Calculate metrics and report
+            self.calculate_metrics(generation % report_interval == 0)
 
-            if generation % report_interval == 0:
-                self.report()
+            # Calculate stagnation
+            if self.best_average != None:
+                if self.avg <= self.best_average:
+                    self.stagnation += 1
+                else: self.stagnation = 0; self.best_average = self.avg
+            else: self.best_average = self.avg
+
+            # Check max stagnation reached
+            if self.stagnation > self.config['max_stagnation']:
+                print(f"Max Stagnation reached. Resetting population.")
+                self.stagnation = 0
+                generation = 0
+                self.genomes = [Genome(self.config, self.structure) for i in range(self.config['population_size'])]
+                continue
 
             # rank, kill and regenerate
             self.genomes.sort(key=lambda x : x.fitness, reverse=True)
+            seed()
             self.kill_genomes()
             self.regenerate_genomes()
+
+            generation += 1
 
         return self.genomes[0]
 
