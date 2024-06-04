@@ -1,5 +1,6 @@
 from genetic.network import Genome, FeedForwardNetwork, default_config
 from genetic.utility import odds
+from  genetic.persist import save_genome
 from random import choice, seed
 
 class Population:
@@ -105,7 +106,6 @@ class Population:
 
             # rank, kill and regenerate
             self.genomes.sort(key=lambda x : x.fitness, reverse=True)
-            seed()
             self.kill_genomes()
             self.regenerate_genomes()
 

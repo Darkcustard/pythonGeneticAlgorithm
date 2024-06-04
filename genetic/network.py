@@ -162,6 +162,8 @@ class FeedForwardNetwork:
 
     def activate(self, inputs : 'list[float]') -> 'list[float]':
 
+        if len(inputs) != self.layer_sizes[0]: print(f"Expected : {self.layer_sizes[0]} inputs, Got {len(inputs)}"); exit()
+
         layer_output = FloatMatrix(initial_data=[inputs])
 
         for i in range(len(self.layer_sizes)-1):
