@@ -1,6 +1,6 @@
 
 [Population]
-population_size 400
+population_size 600
 survival_rate 0.3
 
 [Parameters]
@@ -18,7 +18,7 @@ bias_mutate_rate 0.3
 bias_mutate_power 12
 bias_replace_rate 0.05
 
-cross_over_chance 0.05
+cross_over_chance 0.9
 cross_over_coefficient 0.5
 
 [Activations]

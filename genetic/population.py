@@ -43,12 +43,15 @@ class Population:
                 if odds(reproduction_probability):
 
                     # Create child genome
-                    new_genome = self.genomes[i].get_mutated()
+                    new_genome = self.genomes[i].copy()
 
                     # Cross-over
-                    if i != 0 and odds(self.config["cross_over_chance"]):
-                        cross_over_genome = choice(self.genomes[0:i])
+                    if odds(self.config["cross_over_chance"]):
+                        cross_over_genome = choice(self.genomes)
                         new_genome = new_genome.get_cross_over(cross_over_genome)
+
+                    # Mutations
+                    new_genome = new_genome.get_mutated()
 
                     new_genomes.append(new_genome)
 

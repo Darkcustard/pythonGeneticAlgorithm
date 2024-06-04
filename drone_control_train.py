@@ -153,10 +153,8 @@ class Drone:
         left_thrust_ep = pygame.Vector2(cos(3/2*pi+self.left_angle+angle),-sin(3/2*pi+self.left_angle+angle))*self.thruster_jet_size*self.left_thrust + left_ep
         right_thrust_ep = pygame.Vector2(cos(3/2*pi+self.right_angle+angle),-sin(3/2*pi+self.right_angle+angle))*self.thruster_jet_size*self.right_thrust + right_ep
 
-        pygame.draw.line(window,(255,255,0), left_ep, left_thrust_ep,8)
-        pygame.draw.line(window,(255,255,0), right_ep, right_thrust_ep,8)
-
-
+        pygame.draw.line(window,(255,125,0), left_ep, left_thrust_ep,8)
+        pygame.draw.line(window,(255,125,0), right_ep, right_thrust_ep,8)
         pygame.draw.line(window, (100,100,100), self.left_thruster_pos, left_ep,10)
         pygame.draw.line(window, (100,100,100), self.right_thruster_pos, right_ep,10)
         
@@ -191,9 +189,12 @@ def evaluate_genomes(genomes, networks):
             if drone.alive:
                 i += 1
         if not i: break
+
+
         dt = clock.tick(60)/1000*gamespeed
-        #dt = 1/60*gamespeed
+        if dt > 0.1: dt = 0.1 # Stability when window moved
         time += dt
+
         window.fill((0,30,30))
 
         for c in range(len(Drone.checkpoints)):
@@ -216,7 +217,7 @@ def evaluate_genomes(genomes, networks):
 
                 if distance < 30:
                     drone.checkpoint_time += dt
-                    genomes[i].fitness += 10*dt
+                    genomes[i].fitness += 1000*dt
 
                 if drone.checkpoint_time > drone.checkpoint_max_time:
                     drone.checkpoint_index += 1

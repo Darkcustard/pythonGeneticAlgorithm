@@ -1,7 +1,7 @@
 
 [Population]
 population_size 200
-survival_rate 0.3
+survival_rate 0.5
 max_stagnation 5000
 
 [Parameters]
@@ -11,15 +11,15 @@ bias_min -100
 bias_max 100
 
 [Mutations and cross-over]
-weight_mutate_rate 0.5
+weight_mutate_rate 0.1
 weight_mutate_power 10
 weight_replace_rate 0.1
 
-bias_mutate_rate 0.5
+bias_mutate_rate 0.1
 bias_mutate_power 10
 bias_replace_rate 0.1
 
-cross_over_chance 0.03
+cross_over_chance 0.9
 cross_over_coefficient 0.5
 
 [Activations]

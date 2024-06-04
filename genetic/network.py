@@ -54,6 +54,10 @@ class Genome:
     def reset_fitness(self):
         self.fitness = 0
 
+    def copy(self) -> 'Genome':
+        genes = self.genes.copy()
+        return Genome(self.config, self.layer_sizes, genes)
+
     def get_mutated(self) -> 'Genome':
         
         new_genes = self.genes.copy()

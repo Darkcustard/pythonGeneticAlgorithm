@@ -1,4 +1,5 @@
 from genetic.network import Genome
+from pickle import dump, load
 
 def save_genome(genome : Genome, path : str):
     print(f"Saving best Genome to: {path}")
